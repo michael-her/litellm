@@ -94,7 +94,14 @@ test.py
 
 litellm_config.yaml
 !.github/observatory/litellm_config.yaml
-.cursor
+.cursor/*
+!.cursor/config.yaml
+!.cursor/cursor_llm.py
+!.cursor/cursor_env.py
+!.cursor/requirements.txt
+!.cursor/cursor.local.env.example
+.cursor/cursor.local.env
+.cursor/__pycache__/
 litellm/proxy/to_delete_loadtest_work/*
 update_model_cost_map.py
 tests/test_litellm/proxy/_experimental/mcp_server/test_mcp_server_manager.py

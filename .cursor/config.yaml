@@ -1,0 +1,212 @@
+model_list:
+  - model_name: claude-3-5-sonnet-20241022
+    litellm_params:
+      model: vertex_ai/gemini-3.1-pro-preview
+      vertex_project: project-3181868f-4ead-4c6d-9d2
+      vertex_location: global
+      drop_params: true
+
+  # Cursor SDK models (valid IDs from Cursor bridge; api key from .cursor/cursor.local.env)
+  - model_name: helena
+    litellm_params:
+      model: cursor/composer-2.5
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: composer-2.5
+    litellm_params:
+      model: cursor/composer-2.5
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: composer-2
+    litellm_params:
+      model: cursor/composer-2
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: claude-sonnet-4-5
+    litellm_params:
+      model: cursor/claude-sonnet-4-5
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: claude-sonnet-4-6
+    litellm_params:
+      model: cursor/claude-sonnet-4-6
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: claude-sonnet-5
+    litellm_params:
+      model: cursor/claude-sonnet-5
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: claude-sonnet-4
+    litellm_params:
+      model: cursor/claude-sonnet-4
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: claude-haiku-4-5
+    litellm_params:
+      model: cursor/claude-haiku-4-5
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: claude-opus-4-8
+    litellm_params:
+      model: cursor/claude-opus-4-8
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: claude-opus-4-7
+    litellm_params:
+      model: cursor/claude-opus-4-7
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: claude-opus-4-6
+    litellm_params:
+      model: cursor/claude-opus-4-6
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: claude-opus-4-5
+    litellm_params:
+      model: cursor/claude-opus-4-5
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: claude-fable-5
+    litellm_params:
+      model: cursor/claude-fable-5
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: gpt-5.5
+    litellm_params:
+      model: cursor/gpt-5.5
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: gpt-5.4
+    litellm_params:
+      model: cursor/gpt-5.4
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: gpt-5.4-mini
+    litellm_params:
+      model: cursor/gpt-5.4-mini
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: gpt-5.4-nano
+    litellm_params:
+      model: cursor/gpt-5.4-nano
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: gpt-5.3-codex
+    litellm_params:
+      model: cursor/gpt-5.3-codex
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: gpt-5.2
+    litellm_params:
+      model: cursor/gpt-5.2
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: gpt-5.2-codex
+    litellm_params:
+      model: cursor/gpt-5.2-codex
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: gpt-5.1
+    litellm_params:
+      model: cursor/gpt-5.1
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: gpt-5.1-codex-max
+    litellm_params:
+      model: cursor/gpt-5.1-codex-max
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: gpt-5.1-codex-mini
+    litellm_params:
+      model: cursor/gpt-5.1-codex-mini
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: gpt-5-mini
+    litellm_params:
+      model: cursor/gpt-5-mini
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: gemini-3.1-pro
+    litellm_params:
+      model: cursor/gemini-3.1-pro
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: gemini-3-flash
+    litellm_params:
+      model: cursor/gemini-3-flash
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: gemini-3.5-flash
+    litellm_params:
+      model: cursor/gemini-3.5-flash
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: gemini-2.5-flash
+    litellm_params:
+      model: cursor/gemini-2.5-flash
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: grok-4.3
+    litellm_params:
+      model: cursor/grok-4.3
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: grok-build-0.1
+    litellm_params:
+      model: cursor/grok-build-0.1
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: kimi-k2.7-code
+    litellm_params:
+      model: cursor/kimi-k2.7-code
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: kimi-k2.5
+    litellm_params:
+      model: cursor/kimi-k2.5
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+  - model_name: glm-5.2
+    litellm_params:
+      model: cursor/glm-5.2
+      api_key: os.environ/CURSOR_API_KEY
+      drop_params: true
+
+litellm_settings:
+  drop_params: true
+  custom_provider_map:
+    - provider: cursor
+      custom_handler: cursor_llm.cursor_handler
