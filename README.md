@@ -2,6 +2,9 @@
         🚅 LiteLLM
     </h1>
     <p align="center">
+        <a href="README.ko.md">🇰🇷 Cursor SDK 프록시 구성 가이드</a>
+    </p>
+    <p align="center">
         <p align="center">LiteLLM AI Gateway
         </p>
         <p align="center">Open Source AI Gateway for 100+ LLMs. Self-hosted. Enterprise-ready. Call any LLM in OpenAI format.</p>
