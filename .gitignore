@@ -99,6 +99,7 @@ litellm_config.yaml
 !.cursor/cursor_llm.py
 !.cursor/cursor_env.py
 !.cursor/requirements.txt
+!.cursor/start-server.ps1
 !.cursor/cursor.local.env.example
 .cursor/cursor.local.env
 .cursor/__pycache__/

@@ -175,27 +175,21 @@ model_list:
       api_key: os.environ/CURSOR_API_KEY
       drop_params: true
 
-  - model_name: grok-4.3
+  - model_name: grok-4.5
     litellm_params:
-      model: cursor/grok-4.3
+      model: cursor/grok-4.5
       api_key: os.environ/CURSOR_API_KEY
       drop_params: true
 
-  - model_name: grok-build-0.1
+  - model_name: default
     litellm_params:
-      model: cursor/grok-build-0.1
+      model: cursor/default
       api_key: os.environ/CURSOR_API_KEY
       drop_params: true
 
   - model_name: kimi-k2.7-code
     litellm_params:
       model: cursor/kimi-k2.7-code
-      api_key: os.environ/CURSOR_API_KEY
-      drop_params: true
-
-  - model_name: kimi-k2.5
-    litellm_params:
-      model: cursor/kimi-k2.5
       api_key: os.environ/CURSOR_API_KEY
       drop_params: true
 
