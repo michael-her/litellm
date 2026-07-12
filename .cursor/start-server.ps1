@@ -4,6 +4,7 @@ $ErrorActionPreference = "Stop"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $RepoRoot = Split-Path -Parent $ScriptDir
 $ConfigPath = Join-Path $ScriptDir "config.yaml"
+$LogConfigPath = Join-Path $ScriptDir "uvicorn_log_config.yaml"
 $EnvFile = Join-Path $ScriptDir "cursor.local.env"
 
 $env:PYTHONIOENCODING = "utf-8"
@@ -31,4 +32,4 @@ $ListenHost = if ($env:LITELLM_HOST) { $env:LITELLM_HOST } else { "127.0.0.1" }
 Write-Host "Starting LiteLLM proxy at http://${ListenHost}:${ListenPort}" -ForegroundColor Cyan
 Write-Host "Config: $ConfigPath" -ForegroundColor DarkGray
 
-uv run litellm --config $ConfigPath --port $ListenPort --host $ListenHost
+uv run litellm --config $ConfigPath --port $ListenPort --host $ListenHost --log_config $LogConfigPath
