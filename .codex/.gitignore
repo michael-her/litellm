@@ -1,0 +1,13 @@
+*
+!.gitignore
+!codex_rpc.py
+!codex_llm.py
+!config.yaml
+!codex.local.env.example
+!start-server.ps1
+!install-startup.ps1
+!README.md
+!tests/
+tests/*
+!tests/test_codex_llm.py
+!tests/fake_app_server.py

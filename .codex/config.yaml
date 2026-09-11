@@ -1,0 +1,33 @@
+model_list:
+  - model_name: codex-default
+    litellm_params:
+      model: codex/gpt-6-astra
+  - model_name: codex-gpt-6-astra
+    litellm_params:
+      model: codex/gpt-6-astra
+  - model_name: codex-gpt-5.6-sol
+    litellm_params:
+      model: codex/gpt-5.6-sol
+  - model_name: codex-gpt-5.6-terra
+    litellm_params:
+      model: codex/gpt-5.6-terra
+  - model_name: codex-gpt-5.6-luna
+    litellm_params:
+      model: codex/gpt-5.6-luna
+  - model_name: codex-gpt-5.5
+    litellm_params:
+      model: codex/gpt-5.5
+  - model_name: codex-gpt-5.3-codex-spark
+    litellm_params:
+      model: codex/gpt-5.3-codex-spark
+
+litellm_settings:
+  drop_params: true
+  num_retries: 0
+  request_timeout: 660
+  custom_provider_map:
+    - provider: codex
+      custom_handler: codex_llm.codex_handler
+
+general_settings:
+  master_key: os.environ/CODEX_PROXY_KEY
