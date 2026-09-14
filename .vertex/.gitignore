@@ -1,0 +1,7 @@
+*
+!.gitignore
+!config.yaml
+!start-server.ps1
+!install-startup.ps1
+!vertex.local.env.example
+!README.md
