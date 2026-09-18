@@ -22,7 +22,18 @@ model_list:
 
 litellm_settings:
   request_timeout: 180
-  num_retries: 0
+  num_retries: 3
+
+router_settings:
+  num_retries: 3
+  retry_after: 2
+  disable_cooldowns: true
+  retry_policy:
+    BadRequestErrorRetries: 0
+    AuthenticationErrorRetries: 0
+    ContentPolicyViolationErrorRetries: 0
+    TimeoutErrorRetries: 3
+    RateLimitErrorRetries: 3
 
 general_settings:
   master_key: os.environ/VERTEX_PROXY_KEY
