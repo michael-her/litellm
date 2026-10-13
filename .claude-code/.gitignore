@@ -1,0 +1,13 @@
+*
+!.gitignore
+!claude_cli.py
+!claude_llm.py
+!config.yaml
+!claude.local.env.example
+!start-server.ps1
+!install-startup.ps1
+!README.md
+!tests/
+tests/*
+!tests/test_claude_llm.py
+!tests/fake_claude.py
