@@ -29,5 +29,8 @@ litellm_settings:
     - provider: codex
       custom_handler: codex_llm.codex_handler
 
+router_settings:
+  disable_cooldowns: true
+
 general_settings:
   master_key: os.environ/CODEX_PROXY_KEY

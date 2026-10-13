@@ -12,7 +12,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from codex_llm import CodexLLM, StopFilter
 from codex_rpc import ServerSettings
-from litellm.llms.custom_llm import CustomLLMError
+from litellm import (
+    APIError,
+    AuthenticationError,
+    BadRequestError,
+    RateLimitError,
+    ServiceUnavailableError,
+    Timeout,
+)
 from litellm.proxy.types_utils.utils import get_instance_fn
 
 
@@ -86,19 +93,21 @@ def test_partial_stop_prefix_flushed() -> None:
 
 
 @pytest.mark.parametrize(
-    ("mode", "status"),
+    ("mode", "error_type", "status"),
     [
-        ("no-auth", 401),
-        ("eof", 503),
-        ("failed", 429),
-        ("approval", 400),
-        ("malformed", 502),
-        ("hang-init", 504),
-        ("hang-turn", 504),
+        ("no-auth", AuthenticationError, 401),
+        ("eof", ServiceUnavailableError, 503),
+        ("failed", RateLimitError, 429),
+        ("approval", BadRequestError, 400),
+        ("malformed", APIError, 502),
+        ("hang-init", Timeout, 504),
+        ("hang-turn", Timeout, 504),
     ],
 )
-def test_errors_do_not_report_success_or_leave_processes(tmp_path: Path, mode: str, status: int) -> None:
-    with pytest.raises(CustomLLMError) as caught:
+def test_errors_map_to_litellm_errors_without_leaving_processes(
+    tmp_path: Path, mode: str, error_type: type[Exception], status: int
+) -> None:
+    with pytest.raises(error_type) as caught:
         asyncio.run(handler(tmp_path, mode, 0.5 if mode.startswith("hang") else 10).acompletion("test", messages()))
     assert caught.value.status_code == status
     assert not psutil.pid_exists(int((tmp_path / "child.pid").read_text()))
@@ -113,7 +122,7 @@ def test_errors_do_not_report_success_or_leave_processes(tmp_path: Path, mode: s
     ],
 )
 def test_unsupported_inputs_fail_before_process_launch(tmp_path: Path, bad_messages: object) -> None:
-    with pytest.raises(CustomLLMError) as caught:
+    with pytest.raises(BadRequestError) as caught:
         asyncio.run(handler(tmp_path).acompletion("test", bad_messages))
     assert caught.value.status_code == 400
     assert not (tmp_path / "child.pid").exists()

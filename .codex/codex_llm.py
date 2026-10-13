@@ -7,7 +7,15 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, JsonValue, TypeAdapter, ValidationError
 
-from litellm import CustomLLM
+from litellm import (
+    APIError,
+    AuthenticationError,
+    BadRequestError,
+    CustomLLM,
+    RateLimitError,
+    ServiceUnavailableError,
+    Timeout,
+)
 from litellm.llms.custom_llm import CustomLLMError
 from litellm.types.llms.openai import ChatCompletionUsageBlock
 from litellm.types.utils import GenericStreamingChunk, ModelResponse, ModelResponseStream
@@ -195,6 +203,23 @@ async def generate(
                     return
 
 
+def public_error(model: str, status_code: int, message: str) -> Exception:
+    provider = "codex"
+    match status_code:
+        case 400:
+            return BadRequestError(message, model, provider)
+        case 401:
+            return AuthenticationError(message, provider, model)
+        case 429:
+            return RateLimitError(message, provider, model)
+        case 503:
+            return ServiceUnavailableError(message, provider, model)
+        case 504:
+            return Timeout(message, model, provider, exception_status_code=504)
+        case status:
+            return APIError(status, message, provider, model)
+
+
 class CodexLLM(CustomLLM):
     def __init__(self, settings: ServerSettings | None = None) -> None:
         super().__init__()
@@ -214,13 +239,17 @@ class CodexLLM(CustomLLM):
                 async for event in stream:
                     yield event
         except RpcError as error:
-            raise CustomLLMError(error.status_code, str(error)) from error
+            raise public_error(model, error.status_code, str(error)) from error
+        except CustomLLMError as error:
+            raise public_error(model, error.status_code, error.message) from error
         except ValidationError as error:
-            raise CustomLLMError(400, "Unsupported message or parameter format; send text chat messages") from error
+            raise public_error(
+                model, 400, "Unsupported message or parameter format; send text chat messages"
+            ) from error
         except TimeoutError as error:
-            raise CustomLLMError(504, "Codex request timed out (CODEX_TIMEOUT_S)") from error
+            raise public_error(model, 504, "Codex request timed out (CODEX_TIMEOUT_S)") from error
         except OSError as error:
-            raise CustomLLMError(503, f"Unable to communicate with Codex app-server: {error}") from error
+            raise public_error(model, 503, f"Unable to communicate with Codex app-server: {error}") from error
 
     async def astreaming(
         self,
