@@ -40,11 +40,19 @@ try {
     [void](New-Item -ItemType Directory -Path $LogDir -Force)
     Set-Location -LiteralPath $RepoRoot
     $Arguments = @('-m', 'litellm.proxy.proxy_cli', '--config', "`"$ConfigPath`"", '--host', $ListenHost, '--port', $ListenPort)
-    $Server = Start-Process -FilePath $Python -ArgumentList $Arguments -WorkingDirectory $RepoRoot -WindowStyle Hidden -PassThru `
-        -RedirectStandardOutput (Join-Path $LogDir 'server.log') -RedirectStandardError (Join-Path $LogDir 'server.err.log')
-    Set-Content -LiteralPath (Join-Path $ScriptDir 'server.pid') -Value $Server.Id
-    $Server.WaitForExit()
-    exit $Server.ExitCode
+    while ($true) {
+        try {
+            $Server = Start-Process -FilePath $Python -ArgumentList $Arguments -WorkingDirectory $RepoRoot -WindowStyle Hidden -PassThru `
+                -RedirectStandardOutput (Join-Path $LogDir 'server.log') -RedirectStandardError (Join-Path $LogDir 'server.err.log')
+            Set-Content -LiteralPath (Join-Path $ScriptDir 'server.pid') -Value $Server.Id
+            Add-Content -LiteralPath (Join-Path $LogDir 'supervisor.log') -Value "$(Get-Date -Format o) Started PID=$($Server.Id) at ${ListenHost}:${ListenPort}"
+            $Server.WaitForExit()
+            Add-Content -LiteralPath (Join-Path $LogDir 'supervisor.log') -Value "$(Get-Date -Format o) Server PID=$($Server.Id) exited; restarting in 5 seconds"
+        } catch {
+            Add-Content -LiteralPath (Join-Path $LogDir 'supervisor.log') -Value "$(Get-Date -Format o) Launch failed: $($_.Exception.Message); retrying in 5 seconds"
+        }
+        Start-Sleep -Seconds 5
+    }
 } finally {
     if ($Acquired) { $Mutex.ReleaseMutex() }
     $Mutex.Dispose()
