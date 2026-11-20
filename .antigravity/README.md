@@ -11,7 +11,13 @@ Google Antigravity CLI `agy`에 로그인한 Windows 사용자의 모델을 Open
 & .antigravity\start-server.ps1
 ```
 
-Startup의 `litellm.exe antigravity.lnk`는 숨긴 Windows PowerShell로 실행합니다. 설치를 반복해도 바로가기는 하나입니다. 서버가 이미 실행 중이면 추가 서버를 만들지 않습니다. 다른 프로세스가 포트를 사용하면 PID를 포함한 오류로 종료합니다. `server.pid`에는 venv 실행기가 아닌 실제 포트 소유 프로세스의 PID가 기록됩니다.
+`start-server.ps1`은 Startup의 `litellm.exe antigravity.lnk`를 `explorer.exe`로 열고 준비를 확인한 후 반환합니다. 바로가기는 숨긴 PowerShell의 `start-server.ps1 -RunSupervisor`를 실행합니다. 지속 프로세스는 Explorer 아래에서 실행되므로 호출한 Codex/Claude 셸 종료에 묶이지 않습니다. `-RunSupervisor`를 작업 셸에서 직접 실행하지 마세요. 설치를 반복해도 바로가기는 하나이며, supervisor의 포트별 mutex로 중복 실행을 막습니다. 다른 프로세스가 포트를 사용하면 PID를 포함한 오류로 종료합니다.
+
+Supervisor는 서버가 예상치 않게 종료되면 5초부터 시작하여 10/20/40/60초 간격으로 재시작합니다. 서버가 1분 이상 유지되면 대기 시간을 5초로 초기화합니다. 시작/준비/종료/재시작 기록은 `logs/supervisor.log`, 서버 출력은 `logs/server.log`와 `logs/server.err.log`에 있습니다. 상태는 모두 이 폴더에 두며 `supervisor.pid`는 supervisor PowerShell, `server-launcher.pid`는 venv 실행기, `server.pid`는 실제 포트 소유 Python 프로세스입니다.
+
+의도적으로 중단하려면 `& .antigravity\stop-server.ps1`을 실행합니다. `stop.requested`를 만들어 supervisor의 재시작을 막고 supervisor/서버를 종료합니다. 반복 실행해도 안전하며, 이후 `start-server.ps1` 또는 Startup 바로가기로 실행하면 stop flag를 해제하고 복구합니다. 서버 프로세스만 강제 종료하면 watchdog이 다시 실행합니다. supervisor가 없는 구버전 서버는 stop 명령 후 새 launcher로 전환합니다.
+
+포트/호스트 override는 `antigravity.local.env`에 저장하세요. launcher의 프로세스 환경에 지정한 포트/호스트는 비밀값 없는 `launch.generated.json`으로 전달합니다. 키와 CLI 등 나머지 설정은 detached supervisor가 환경 파일에서 읽습니다.
 
 RisuAI 등의 Base URL을 `http://127.0.0.1:14604/v1`에서 `http://127.0.0.1:14606/v1`로 바꾸고 API Key에는 `antigravity.local.env`의 `ANTIGRAVITY_PROXY_KEY` 값을 입력합니다. 기존 Vertex 키와는 별도입니다. 모델 이름은 `/v1/models`에서 선택합니다. 이 작업은 클라이언트 설정을 자동 변경하지 않습니다.
 
@@ -62,12 +68,16 @@ agy 1.5.13 바이너리의 기본 `max_tokens_per_user_input_step`은 64,000입�
 ## 검증
 
 ```powershell
-& .venv\Scripts\python.exe -m pytest .antigravity\tests\test_antigravity.py -q --basetemp=.antigravity\logs\pytest-temp
+& .venv\Scripts\python.exe -m pytest .antigravity\tests -q --basetemp=.antigravity\logs\pytest-temp -o cache_dir=.antigravity/logs/pytest-cache
 & .venv\Scripts\python.exe .antigravity\tests\verify_live.py
 ```
 
 `verify_live.py`는 실제 `curl.exe`를 호출하고 비밀 키를 출력하지 않습니다. 전체 본문과 헤더는 `logs/`에 저장합니다. unit test의 fake agy는 transcript, stream, final response, usage, 오류 종류, 도구 차단, 프로세스 트리 종료, 동시성, 임시 폴더 정리, 모델 검색/fallback 설정 및 마지막 정상 설정 보존을 검증합니다.
 
+`python .antigravity/tests/verify_watchdog.py`는 production 서버 프로세스만 한 번 종료하여 자동 재시작을 확인하고, stop 명령 후 70초 동안 포트가 계속 닫혀 있는지 확인합니다. 이 검사는 서비스 중단이 있으므로 필요한 때만 실행합니다. 실패해도 `finally`에서 Explorer 경유 detached 실행으로 복구합니다. 재실행 후 PID/부모 프로세스 체인과 fake override 부재를 확인하고 `logs/watchdog-production.json`에 PID를 기록합니다. 이후 별도 셸 명령으로 같은 PID의 생존 여부를 확인할 수 있습니다.
+
+앞 명령을 실행한 셸이 끝난 뒤 별도 셸에서 `python .antigravity/tests/verify_watchdog.py --survival`을 실행하면 기록된 PID가 그대로 살아 있는지, Explorer 부모 체인인지, production config와 환경에 fake override가 없는지 확인합니다. 서버를 중단하지 않으며 `/v1/models`와 Flash Low completion 1회, 기존 Vertex `/v1/models`를 확인합니다.
+
 격리 테스트에는 `ANTIGRAVITY_CLI`와 JSON 배열 `ANTIGRAVITY_CLI_ARGS`로 fake CLI를 지정할 수 있습니다. 정상 Startup 실행에는 두 변수를 설정하지 않습니다. 이 설정은 인증을 우회하지 않습니다.
 
-`tests/verify_fallback.py`는 14606이 비어 있을 때만 실행하는 독립 통합 테스트입니다. 실행 전 Antigravity 서버만 중단하고 완료 후 `start-server.ps1`로 복구해야 합니다. 별도 HTTP upstream fixture로 non-stream 및 stream 성공 fallback(HTTP 200, `VERTEX_FIXTURE_OK`), 양쪽 실패 시 agy 오류 보존, 첫 token 이후 오류의 SSE 전달/연결 종료를 검증합니다. fixture curl 제한은 요청당 20초입니다. pytest는 같은 검사를 별도 임시 포트에서 실행합니다. 임시 fixture config는 종료 시 삭제하고 요청/응답 증거는 `logs/`에만 남깁니다. 실제 Vertex에 대한 Argon/Neon fallback도 확인했지만 기존 Vertex 할당량으로 둘 다 HTTP 429였으므로, 실제 Vertex의 성공 응답은 검증하지 못했습니다.
+`tests/verify_fallback.py`는 Antigravity를 stop 명령으로 중단한 뒤 14606에서 실행하는 독립 통합 테스트입니다. 실패해도 `finally`에서 `start-server.ps1`의 Explorer 경유 detached 실행으로 production을 복구합니다. `verify_live.py`와 `verify_long_context.py`는 실행 중인 production에 요청만 보내며 서버를 시작하거나 중단하지 않습니다. 별도 HTTP upstream fixture로 non-stream 및 stream 성공 fallback(HTTP 200, `VERTEX_FIXTURE_OK`), 양쪽 실패 시 agy 오류 보존, 첫 token 이후 오류의 SSE 전달/연결 종료를 검증합니다. fixture curl 제한은 요청당 20초입니다. pytest는 같은 검사를 별도 임시 포트에서 실행합니다. 임시 fixture config는 종료 시 삭제하고 요청/응답 증거는 `logs/`에만 남깁니다. 실제 Vertex에 대한 Argon/Neon fallback도 확인했지만 기존 Vertex 할당량으로 둘 다 HTTP 429였으므로, 실제 Vertex의 성공 응답은 검증하지 못했습니다.

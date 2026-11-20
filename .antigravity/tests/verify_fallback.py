@@ -17,6 +17,7 @@ import yaml
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from antigravity_cli import kill_tree
 from verify_live import ROOT, curl, env_key
+from production_lifecycle import with_production_restore
 
 
 class FixtureServer(ThreadingHTTPServer):
@@ -155,4 +156,4 @@ def main(port: int = 14606, prefix: str = "fixture") -> None:
 
 
 if __name__ == "__main__":
-    main()
+    with_production_restore(main, 14606)

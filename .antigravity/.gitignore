@@ -8,6 +8,7 @@
 !config.template.yaml
 !antigravity.local.env.example
 !start-server.ps1
+!stop-server.ps1
 !install-startup.ps1
 !README.md
 !tests/
@@ -19,3 +20,6 @@ tests/*
 !tests/mutation_check.py
 !tests/probe_limits.py
 !tests/verify_long_context.py
+!tests/production_lifecycle.py
+!tests/test_lifecycle.py
+!tests/verify_watchdog.py
