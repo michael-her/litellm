@@ -1,0 +1,20 @@
+litellm_settings:
+  drop_params: true
+  num_retries: 0
+  request_timeout: 660
+  custom_provider_map:
+    - provider: antigravity
+      custom_handler: antigravity_llm.antigravity_handler
+
+router_settings:
+  num_retries: 0
+  disable_cooldowns: true
+  retry_policy:
+    RateLimitErrorRetries: 0
+    AuthenticationErrorRetries: 0
+    BadRequestErrorRetries: 0
+    TimeoutErrorRetries: 0
+
+general_settings:
+  master_key: os.environ/ANTIGRAVITY_PROXY_KEY
+  custom_auth: antigravity_auth.authenticate
